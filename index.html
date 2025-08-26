@@ -16,10 +16,12 @@
       font-weight: bold;
       margin-bottom: 10px;
     }
-    #points {
-      text-align: right;
-      font-size: 1.2em;
-      margin-bottom: 10px;
+    #topbar {
+      display: flex;
+      justify-content: space-between;
+      max-width: 700px;
+      margin: 0 auto 10px auto;
+      font-size: 1.1em;
     }
     hr {
       margin: 20px 0;
@@ -33,7 +35,7 @@
       display: grid;
       grid-template-columns: repeat(6, 1fr);
       gap: 10px;
-      max-width: 600px;
+      max-width: 700px;
       margin: 20px auto;
     }
     .choice {
@@ -61,31 +63,54 @@
 </head>
 <body>
   <header>e-Board -- Guess the Initial Sounds</header>
-  <div id="points">Points: 0</div>
+  <div id="topbar">
+    <div id="points">Points: 0</div>
+    <div id="counter">Question: 1 / 1</div>
+  </div>
   <hr>
-  <img id="image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Plane_icon.svg/512px-Plane_icon.svg.png" alt="word image">
-  <div id="word">__ANE</div>
+  <img id="image" src="" alt="word image">
+  <div id="word">__</div>
 
   <div id="choices"></div>
   <div id="feedback"></div>
 
+  <audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
   <script>
-    // Data set untuk permainan
+    // Senarai soalan
     const gameData = [
-      {
-        word: "__ANE",
-        answer: "PL",
-        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Plane_icon.svg/512px-Plane_icon.svg.png"
-      }
+      {word: "__AGON", answer: "DR", image: "dragon.jpg"},
+      {word: "__EE", answer: "TR", image: "tree.jpg"},
+      {word: "__UIT", answer: "FR", image: "fruit.jpg"},
+      {word: "__EY", answer: "GR", image: "grey.jpg"},
+      {word: "__AYON", answer: "CR", image: "crayon.jpg"},
+      {word: "__USH", answer: "BR", image: "brush.jpg"},
+      {word: "__ETTY", answer: "PR", image: "pretty.jpg"},
+      {word: "__AY", answer: "PL", image: "play.jpg"},
+      {word: "__Y", answer: "FL", image: "fly.jpg"},
+      {word: "__UE", answer: "GL", image: "glue.jpg"},
+      {word: "__AP", answer: "CL", image: "clap.jpg"},
+      {word: "__ANE", answer: "PL", image: "plane.jpg"},
+      {word: "__ONDE", answer: "BL", image: "blonde.png"},
     ];
 
-    const choices = ["PL", "CL", "GL", "BL", "FL", "GR", "PR", "CR", "TR", "BR"];
+ const choices = ["DR", "TR", "FR", "GR", "CR", "BR", "PR", "PL", "FL", "GL", "CL", "BL"];
 
     let score = 0;
-    let current = gameData[0]; // boleh dikembangkan utk banyak soalan
+    let currentIndex = 0;
 
-    // papar pilihan
+    const img = document.getElementById("image");
+    const wordDiv = document.getElementById("word");
+    const pointsDiv = document.getElementById("points");
+    const feedback = document.getElementById("feedback");
     const choicesDiv = document.getElementById("choices");
+    const counterDiv = document.getElementById("counter");
+
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+
+    // create choices buttons
     choices.forEach(c => {
       const btn = document.createElement("div");
       btn.className = "choice";
@@ -94,17 +119,48 @@
       choicesDiv.appendChild(btn);
     });
 
-    function checkAnswer(selected) {
-      const feedback = document.getElementById("feedback");
-      if (selected === current.answer) {
-        score++;
-        document.getElementById("points").textContent = "Points: " + score;
-        feedback.textContent = "✅ Correct!";
-        document.getElementById("word").textContent = current.answer + current.word.slice(2);
-      } else {
-        feedback.textContent = "❌ Try again!";
+    function loadQuestion() {
+      if (currentIndex >= gameData.length) {
+        feedback.textContent = "🎉 Game Over! Final Score: " + score;
+        img.style.display = "none";
+        wordDiv.style.display = "none";
+        choicesDiv.style.display = "none";
+        counterDiv.textContent = "";
+        return;
       }
+      const q = gameData[currentIndex];
+      img.src = q.image;
+      img.style.display = "block";
+      wordDiv.style.display = "block";
+      choicesDiv.style.display = "grid";
+      wordDiv.textContent = q.word;
+      feedback.textContent = "";
+      counterDiv.textContent = "Question: " + (currentIndex+1) + " / " + gameData.length;
     }
+
+    function checkAnswer(selected) {
+      const q = gameData[currentIndex];
+      if (selected === q.answer) {
+        score++;
+        pointsDiv.textContent = "Points: " + score;
+        feedback.textContent = "✅ Correct!";
+        correctSound.play();
+      } else {
+        feedback.textContent = "❌ Wrong!";
+        wrongSound.play();
+      }
+      // papar jawapan penuh
+      wordDiv.textContent = q.answer + q.word.slice(2);
+
+      // tunggu 1.2 saat, pergi ke soalan seterusnya
+      setTimeout(() => {
+        currentIndex++;
+        loadQuestion();
+      }, 1200);
+    }
+
+    // mula permainan
+    loadQuestion();
   </script>
 </body>
 </html>
