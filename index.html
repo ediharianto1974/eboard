@@ -54,10 +54,30 @@
       margin-top: 15px;
       min-height: 30px;
     }
+    #imageContainer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin: 10px auto;
+    }
     img {
       max-width: 200px;
-      margin: 10px auto;
       display: block;
+    }
+    #soundBtn {
+      background: #38bdf8;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      cursor: pointer;
+      font-size: 1.5em;
+      color: white;
+      transition: 0.2s;
+    }
+    #soundBtn:hover {
+      background: #0ea5e9;
     }
   </style>
 </head>
@@ -68,30 +88,36 @@
     <div id="counter">Question: 1 / 12</div>
   </div>
   <hr>
-  <img id="image" src="" alt="word image">
+
+  <div id="imageContainer">
+    <img id="image" src="" alt="word image">
+    <button id="soundBtn">🔊</button>
+  </div>
+
   <div id="word">__</div>
 
   <div id="choices"></div>
   <div id="feedback"></div>
 
-  <audio id="correctSound" src="clap.mp3"></audio>
+  <audio id="correctSound" src="clap1.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
+  <audio id="wordSound"></audio>
 
   <script>
-    // Senarai penuh soalan
+    // Senarai penuh soalan (tambah audio)
     const gameData = [
-      {word: "__AGON", answer: "DR", image: "dragon.jpg"},
-      {word: "__EE", answer: "TR", image: "tree.jpg"},
-      {word: "__UIT", answer: "FR", image: "fruit.jpg"},
-      {word: "__EY", answer: "GR", image: "grey.jpg"},
-      {word: "__AYON", answer: "CR", image: "crayon.jpg"},
-      {word: "__USH", answer: "BR", image: "brush.jpg"},
-      {word: "__ETTY", answer: "PR", image: "pretty.jpg"},
-      {word: "__Y", answer: "FL", image: "fly.jpg"},
-      {word: "__UE", answer: "GL", image: "glue.jpg"},
-      {word: "__AP", answer: "CL", image: "clap.jpg"},
-      {word: "__ANE", answer: "PL", image: "plane.jpg"},
-      {word: "__ONDE", answer: "BL", image: "blonde.png"},
+      {word: "__AGON", answer: "DR", image: "dragon.jpg", sound: "dragon.mp3"},
+      {word: "__EE", answer: "TR", image: "tree.jpg", sound: "tree.mp3"},
+      {word: "__UIT", answer: "FR", image: "fruit.jpg", sound: "fruit.mp3"},
+      {word: "__EY", answer: "GR", image: "grey.jpg", sound: "grey.mp3"},
+      {word: "__AYON", answer: "CR", image: "crayon.jpg", sound: "crayon.mp3"},
+      {word: "__USH", answer: "BR", image: "brush.jpg", sound: "brush.mp3"},
+      {word: "__ETTY", answer: "PR", image: "pretty.jpg", sound: "pretty.mp3"},
+      {word: "__Y", answer: "FL", image: "fly.jpg", sound: "fly.mp3"},
+      {word: "__UE", answer: "GL", image: "glue.jpg", sound: "glue.mp3"},
+      {word: "__AP", answer: "CL", image: "clap.jpg", sound: "clap.mp3"},
+      {word: "__ANE", answer: "PL", image: "plane.jpg", sound: "plane.mp3"},
+      {word: "__ONDE", answer: "BL", image: "blonde.png", sound: "blonde.mp3"},
     ];
 
     const choices = ["DR", "TR", "FR", "GR", "CR", "BR", "PR", "PL", "FL", "GL", "CL", "BL"];
@@ -105,11 +131,12 @@
     const feedback = document.getElementById("feedback");
     const choicesDiv = document.getElementById("choices");
     const counterDiv = document.getElementById("counter");
+    const soundBtn = document.getElementById("soundBtn");
+    const wordSound = document.getElementById("wordSound");
 
     const correctSound = document.getElementById("correctSound");
     const wrongSound = document.getElementById("wrongSound");
 
-    // fungsi shuffle
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -117,11 +144,9 @@
       }
     }
 
-    // shuffle gameData, ambil hanya 12
     shuffleArray(gameData);
     let questions = gameData.slice(0, 12);
 
-    // create choices buttons
     choices.forEach(c => {
       const btn = document.createElement("div");
       btn.className = "choice";
@@ -133,7 +158,7 @@
     function loadQuestion() {
       if (currentIndex >= questions.length) {
         feedback.textContent = "🎉 Game Over! Final Score: " + score;
-        img.style.display = "none";
+        document.getElementById("imageContainer").style.display = "none";
         wordDiv.style.display = "none";
         choicesDiv.style.display = "none";
         counterDiv.textContent = "";
@@ -141,12 +166,12 @@
       }
       const q = questions[currentIndex];
       img.src = q.image;
-      img.style.display = "block";
-      wordDiv.style.display = "block";
-      choicesDiv.style.display = "grid";
       wordDiv.textContent = q.word;
       feedback.textContent = "";
       counterDiv.textContent = "Question: " + (currentIndex+1) + " / " + questions.length;
+
+      // Set audio untuk perkataan
+      wordSound.src = q.sound;
     }
 
     function checkAnswer(selected) {
@@ -160,17 +185,19 @@
         feedback.textContent = "❌ Wrong!";
         wrongSound.play();
       }
-      // papar jawapan penuh
       wordDiv.textContent = q.answer + q.word.slice(2);
 
-      // tunggu 10.0 saat, pergi ke soalan seterusnya
       setTimeout(() => {
         currentIndex++;
         loadQuestion();
       }, 10000);
     }
 
-    // mula permainan
+    // klik butang bunyi
+    soundBtn.onclick = () => {
+      wordSound.play();
+    };
+
     loadQuestion();
   </script>
 </body>
