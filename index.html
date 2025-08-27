@@ -27,6 +27,15 @@
       text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
     }
 
+    #bgControl {
+      margin: 10px auto;
+      max-width: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
     #topbar { 
       display: flex; 
       justify-content: space-between; 
@@ -215,6 +224,13 @@
 </head>
 <body>
   <header>e-Board -- Guess the Initial Blending Sounds</header>
+
+  <!-- Background Music Controls -->
+  <div id="bgControl">
+    <button id="playBgBtn">▶️ Play Music</button>
+    <label>Volume: <input type="range" id="bgVolume" min="0" max="100" value="20"></label>
+  </div>
+
   <div id="topbar">
     <div id="points">Points: 0</div>
     <div id="counter">Question: 1 / 12</div>
@@ -241,10 +257,12 @@
   <img id="mascot" src="normal.png" alt="Mascot">
   <div id="popup"></div>
 
+  <!-- Sounds -->
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
   <audio id="wordSound"></audio>
   <audio id="confettiSound" src="confetti.mp3" loop></audio>
+  <audio id="bgMusic" src="bmusic.mp3" loop></audio>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script>
@@ -285,21 +303,16 @@
     const progressBar = document.getElementById("progressBar");
     const mascot = document.getElementById("mascot");
     const popup = document.getElementById("popup");
+    const bgMusic = document.getElementById("bgMusic");
+    const playBgBtn = document.getElementById("playBgBtn");
+    const bgVolume = document.getElementById("bgVolume");
 
     const encouragements = [
-      "🌟 Great job!",
-      "👍 Keep going!",
-      "🔥 You’re amazing!",
-      "💡 Smart choice!",
-      "👏 Well done!"
+      "🌟 Great job!", "👍 Keep going!", "🔥 You’re amazing!", "💡 Smart choice!", "👏 Well done!"
     ];
 
     const wrongEncouragements = [
-      "😢 Oops, try again!",
-      "😓 Not quite, keep practising!",
-      "🙁 Don't give up!",
-      "💧 Almost there!",
-      "😟 Listen carefully!"
+      "😢 Oops, try again!", "😓 Not quite, keep practising!", "🙁 Don't give up!", "💧 Almost there!", "😟 Listen carefully!"
     ];
 
     function shuffleArray(arr) {
@@ -327,7 +340,12 @@
       loadQuestion();
       mascot.src = "normal.png";
       mascot.style.animation = "bounce 3s infinite ease-in-out";
+      bgMusic.volume = bgVolume.value / 100;
     }
+
+    // Background music controls
+    playBgBtn.onclick = () => { bgMusic.play(); };
+    bgVolume.oninput = () => { bgMusic.volume = bgVolume.value / 100; };
 
     function showPopup(message) {
       popup.textContent = message;
@@ -343,10 +361,7 @@
     }
 
     function loadQuestion() {
-      if (currentIndex >= questions.length) {
-        showResult();
-        return;
-      }
+      if (currentIndex >= questions.length) { showResult(); return; }
       const q = questions[currentIndex];
       img.src = q.image;
       wordDiv.textContent = q.word;
@@ -418,8 +433,7 @@
       nextBtn.style.display = "none";
       progressBar.style.width = "100%";
 
-      let grade = "";
-      let notes = "";
+      let grade = "", notes = "";
       if (score >= 10) { grade = "A"; }
       else if (score >= 7) { grade = "B"; notes="👉 Keep practising!"; }
       else if (score >= 5) { grade = "C"; notes="📘 Revise more."; }
@@ -432,6 +446,7 @@
       tryAgainBtn.style.display = "inline-block";
 
       if (["A","B","C"].includes(grade)) startConfetti(grade);
+      bgMusic.pause(); // pause music when showing result
     }
 
     function startConfetti(grade) {
@@ -452,7 +467,7 @@
 
     tryAgainBtn.onclick = () => { startGame(); };
 
-    // Initialize choices buttons
+    // Initialize choice buttons
     choices.forEach(c => {
       const btn = document.createElement("div");
       btn.className = "choice";
