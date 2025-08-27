@@ -65,7 +65,7 @@
   <header>e-Board -- Guess the Initial Sounds</header>
   <div id="topbar">
     <div id="points">Points: 0</div>
-    <div id="counter">Question: 1 / 1</div>
+    <div id="counter">Question: 1 / 12</div>
   </div>
   <hr>
   <img id="image" src="" alt="word image">
@@ -78,7 +78,7 @@
   <audio id="wrongSound" src="wrong.mp3"></audio>
 
   <script>
-    // Senarai soalan
+    // Senarai penuh soalan
     const gameData = [
       {word: "__AGON", answer: "DR", image: "dragon.jpg"},
       {word: "__EE", answer: "TR", image: "tree.jpg"},
@@ -87,7 +87,6 @@
       {word: "__AYON", answer: "CR", image: "crayon.jpg"},
       {word: "__USH", answer: "BR", image: "brush.jpg"},
       {word: "__ETTY", answer: "PR", image: "pretty.jpg"},
-      {word: "__AY", answer: "PL", image: "play.jpg"},
       {word: "__Y", answer: "FL", image: "fly.jpg"},
       {word: "__UE", answer: "GL", image: "glue.jpg"},
       {word: "__AP", answer: "CL", image: "clap.jpg"},
@@ -95,7 +94,7 @@
       {word: "__ONDE", answer: "BL", image: "blonde.png"},
     ];
 
- const choices = ["DR", "TR", "FR", "GR", "CR", "BR", "PR", "PL", "FL", "GL", "CL", "BL"];
+    const choices = ["DR", "TR", "FR", "GR", "CR", "BR", "PR", "PL", "FL", "GL", "CL", "BL"];
 
     let score = 0;
     let currentIndex = 0;
@@ -110,6 +109,18 @@
     const correctSound = document.getElementById("correctSound");
     const wrongSound = document.getElementById("wrongSound");
 
+    // fungsi shuffle
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    // shuffle gameData, ambil hanya 12
+    shuffleArray(gameData);
+    let questions = gameData.slice(0, 12);
+
     // create choices buttons
     choices.forEach(c => {
       const btn = document.createElement("div");
@@ -120,7 +131,7 @@
     });
 
     function loadQuestion() {
-      if (currentIndex >= gameData.length) {
+      if (currentIndex >= questions.length) {
         feedback.textContent = "🎉 Game Over! Final Score: " + score;
         img.style.display = "none";
         wordDiv.style.display = "none";
@@ -128,18 +139,18 @@
         counterDiv.textContent = "";
         return;
       }
-      const q = gameData[currentIndex];
+      const q = questions[currentIndex];
       img.src = q.image;
       img.style.display = "block";
       wordDiv.style.display = "block";
       choicesDiv.style.display = "grid";
       wordDiv.textContent = q.word;
       feedback.textContent = "";
-      counterDiv.textContent = "Question: " + (currentIndex+1) + " / " + gameData.length;
+      counterDiv.textContent = "Question: " + (currentIndex+1) + " / " + questions.length;
     }
 
     function checkAnswer(selected) {
-      const q = gameData[currentIndex];
+      const q = questions[currentIndex];
       if (selected === q.answer) {
         score++;
         pointsDiv.textContent = "Points: " + score;
@@ -152,11 +163,11 @@
       // papar jawapan penuh
       wordDiv.textContent = q.answer + q.word.slice(2);
 
-      // tunggu 1.2 saat, pergi ke soalan seterusnya
+      // tunggu 10.0 saat, pergi ke soalan seterusnya
       setTimeout(() => {
         currentIndex++;
         loadQuestion();
-      }, 1200);
+      }, 10000);
     }
 
     // mula permainan
@@ -164,5 +175,3 @@
   </script>
 </body>
 </html>
-
-
