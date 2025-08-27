@@ -9,8 +9,8 @@
       text-align: center;
       margin: 0;
       padding: 20px;
-      background: linear-gradient(-45deg, #f8fafc, #e0f7fa, #f1f5f9, #dbeafe);
-      background-size: 400% 400%;
+      background: url("background.gif") no-repeat center center fixed;
+      background-size: cover;
       animation: gradientBG 12s ease infinite;
     }
     @keyframes gradientBG {
@@ -18,21 +18,99 @@
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-    header { font-size: 2em; font-weight: bold; margin-bottom: 10px; }
-    #topbar { display: flex; justify-content: space-between; max-width: 700px; margin: 0 auto 10px auto; font-size: 1.1em; }
+
+    header { 
+      font-size: 2em; 
+      font-weight: bold; 
+      margin-bottom: 10px; 
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5); /* shadow effect */
+    }
+
+    #topbar { 
+      display: flex; 
+      justify-content: space-between; 
+      max-width: 700px; 
+      margin: 0 auto 10px auto; 
+      font-size: 1.1em; 
+    }
+
     hr { margin: 20px 0; }
     #word { font-size: 2em; margin: 20px 0; letter-spacing: 5px; }
-    #choices { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; max-width: 700px; margin: 20px auto; }
-    .choice { background: #e5e7eb; border-radius: 8px; padding: 15px; cursor: pointer; font-size: 1.2em; transition: 0.2s; user-select: none; }
+
+    #choices { 
+      display: grid; 
+      grid-template-columns: repeat(6, 1fr); 
+      gap: 10px; 
+      max-width: 700px; 
+      margin: 20px auto; 
+    }
+
+    .choice { 
+      background: #e5e7eb; 
+      border-radius: 8px; 
+      padding: 15px; 
+      cursor: pointer; 
+      font-size: 1.2em; 
+      transition: 0.2s; 
+      user-select: none;
+      border: 2px solid black;  /* black outline */
+    }
     .choice:hover { background: #d1d5db; }
     .choice.correct { background: #22c55e !important; color: white; }
     .choice.wrong { background: #ef4444 !important; color: white; }
+
     #feedback { font-size: 1.2em; margin-top: 15px; min-height: 30px; }
-    #imageContainer { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px auto; }
-    img { max-width: 200px; display: block; }
-    #soundBtn { background: #38bdf8; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.5em; color: white; transition: 0.2s; }
+
+    #imageContainer { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 15px; 
+      margin: 10px auto; 
+    }
+
+    /* Placeholder box for image */
+    #imagePlaceholder {
+      width: 220px; 
+      height: 220px; 
+      border: 3px dashed #9ca3af; 
+      border-radius: 10px;
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      background: rgba(255,255,255,0.6);
+    }
+    #image {
+      max-width: 200px; 
+      max-height: 200px;
+      display: block;
+    }
+
+    #soundBtn { 
+      background: #38bdf8; 
+      border: none; 
+      border-radius: 50%; 
+      width: 50px; 
+      height: 50px; 
+      cursor: pointer; 
+      font-size: 1.5em; 
+      color: white; 
+      transition: 0.2s; 
+    }
     #soundBtn:hover { background: #0ea5e9; }
-    #nextBtn { display: none; margin-top: 20px; padding: 10px 20px; font-size: 1.2em; border: none; border-radius: 8px; background: #22c55e; color: white; cursor: pointer; transition: 0.2s; }
+
+    #nextBtn { 
+      display: none; 
+      margin-top: 20px; 
+      padding: 10px 20px; 
+      font-size: 1.2em; 
+      border: none; 
+      border-radius: 8px; 
+      background: #22c55e; 
+      color: white; 
+      cursor: pointer; 
+      transition: 0.2s; 
+    }
     #nextBtn:hover:enabled { background: #16a34a; }
     #nextBtn:disabled { background: #9ca3af; cursor: not-allowed; }
 
@@ -73,7 +151,9 @@
   <hr>
 
   <div id="imageContainer">
-    <img id="image" src="" alt="word image">
+    <div id="imagePlaceholder">
+      <img id="image" src="" alt="word image">
+    </div>
     <button id="soundBtn">🔊</button>
   </div>
 
