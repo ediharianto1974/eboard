@@ -13,6 +13,7 @@
       background-size: cover;
       animation: gradientBG 12s ease infinite;
     }
+
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -34,7 +35,6 @@
       font-size: 1.1em; 
     }
 
-    /* Progress bar */
     #progressContainer {
       width: 80%;
       max-width: 700px;
@@ -45,6 +45,7 @@
       height: 20px;
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
     }
+
     #progressBar {
       width: 0%;
       height: 100%;
@@ -96,6 +97,7 @@
       justify-content: center; 
       background: rgba(255,255,255,0.6);
     }
+
     #image {
       max-width: 200px; 
       max-height: 200px;
@@ -130,7 +132,6 @@
     #nextBtn:hover:enabled { background: #16a34a; }
     #nextBtn:disabled { background: #9ca3af; cursor: not-allowed; }
 
-    /* Kotak hasil */
     #resultBox {
       font-size: 1.3em;
       margin-top: 20px;
@@ -167,10 +168,20 @@
       animation: bounce 3s infinite ease-in-out;
       cursor: pointer;
     }
+
     @keyframes bounce {
       0%,100% { transform: translateY(0); }
       50% { transform: translateY(-15px); }
     }
+
+    @keyframes fly {
+      0% { transform: translate(0,0) rotate(0deg); }
+      25% { transform: translate(20px,-20px) rotate(10deg); }
+      50% { transform: translate(-20px,-10px) rotate(-10deg); }
+      75% { transform: translate(10px,-15px) rotate(5deg); }
+      100% { transform: translate(0,0) rotate(0deg); }
+    }
+
     @keyframes shake {
       0% { transform: rotate(0deg); }
       25% { transform: rotate(10deg); }
@@ -178,7 +189,6 @@
       75% { transform: rotate(10deg); }
       100% { transform: rotate(0deg); }
     }
-    .shake { animation: shake 0.5s; }
 
     /* Popup speech bubble */
     #popup {
@@ -210,9 +220,7 @@
     <div id="counter">Question: 1 / 12</div>
   </div>
 
-  <!-- Progress bar -->
   <div id="progressContainer"><div id="progressBar"></div></div>
-
   <hr>
 
   <div id="imageContainer">
@@ -230,18 +238,15 @@
   <div id="resultBox"></div>
   <button id="tryAgainBtn">🔄 TRY AGAIN</button>
 
-  <!-- Mascot -->
-  <img id="mascot" src="mascot.png" alt="Mascot">
+  <img id="mascot" src="normal.png" alt="Mascot">
   <div id="popup"></div>
 
-  <!-- Sounds -->
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
   <audio id="wordSound"></audio>
   <audio id="confettiSound" src="confetti.mp3" loop></audio>
 
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-
   <script>
     const gameData = [
       {word: "__AGON", answer: "DR", image: "dragon.jpg", sound: "dragon.mp3"},
@@ -257,6 +262,7 @@
       {word: "__ANE", answer: "PL", image: "plane.jpg", sound: "plane.mp3"},
       {word: "__ONDE", answer: "BL", image: "blonde.jpg", sound: "blonde.mp3"},
     ];
+
     const choices = ["DR","TR","FR","GR","CR","BR","PR","PL","FL","GL","CL","BL"];
     let score = 0, currentIndex = 0, questions = [];
     let confettiInterval = null;
@@ -280,19 +286,20 @@
     const mascot = document.getElementById("mascot");
     const popup = document.getElementById("popup");
 
-    const encouragementsCorrect = [
+    const encouragements = [
       "🌟 Great job!",
       "👍 Keep going!",
       "🔥 You’re amazing!",
       "💡 Smart choice!",
       "👏 Well done!"
     ];
-    const encouragementsWrong = [
-      "💪 Don’t give up!",
-      "🤗 Try again, you can do it!",
-      "🚀 Keep practising!",
-      "🌈 You’re learning!",
-      "✨ Mistakes help you grow!"
+
+    const wrongEncouragements = [
+      "😢 Oops, try again!",
+      "😓 Not quite, keep practising!",
+      "🙁 Don't give up!",
+      "💧 Almost there!",
+      "😟 Listen carefully!"
     ];
 
     function shuffleArray(arr) {
@@ -318,16 +325,15 @@
       stopConfetti();
       updateProgress();
       loadQuestion();
+      mascot.src = "normal.png";
+      mascot.style.animation = "bounce 3s infinite ease-in-out";
     }
 
-    choicesDiv.innerHTML = "";
-    choices.forEach(c => {
-      const btn = document.createElement("div");
-      btn.className = "choice";
-      btn.textContent = c;
-      btn.onclick = () => checkAnswer(btn, c);
-      choicesDiv.appendChild(btn);
-    });
+    function showPopup(message) {
+      popup.textContent = message;
+      popup.style.display = "block";
+      setTimeout(()=>{ popup.style.display="none"; }, 3000);
+    }
 
     function resetChoices() {
       document.querySelectorAll(".choice").forEach(btn => {
@@ -357,10 +363,18 @@
       progressBar.style.width = percent + "%";
     }
 
-    function showPopup(message) {
-      popup.textContent = message;
-      popup.style.display = "block";
-      setTimeout(()=>{ popup.style.display="none"; }, 3000);
+    function showMascotMood(correct) {
+      if(correct) {
+        mascot.src = "happy.png";
+        mascot.style.animation = "fly 1.5s ease-in-out";
+      } else {
+        mascot.src = "angry.png";
+        mascot.style.animation = "shake 0.5s";
+      }
+      setTimeout(() => {
+        mascot.src = "normal.png";
+        mascot.style.animation = "bounce 3s infinite ease-in-out";
+      }, 1500);
     }
 
     function checkAnswer(button, selected) {
@@ -371,23 +385,17 @@
         feedback.textContent = "✅ Correct!";
         correctSound.play();
         button.classList.add("correct");
-
-        mascot.classList.add("shake");
-        setTimeout(()=> mascot.classList.remove("shake"), 600);
-        showPopup(encouragementsCorrect[Math.floor(Math.random()*encouragementsCorrect.length)]);
+        showMascotMood(true);
+        showPopup(encouragements[Math.floor(Math.random()*encouragements.length)]);
       } else {
         feedback.textContent = "❌ Wrong!";
         wrongSound.play();
         button.classList.add("wrong");
         document.querySelectorAll(".choice").forEach(btn => {
-          if (btn.textContent === q.answer) {
-            btn.classList.add("correct");
-          }
+          if (btn.textContent === q.answer) btn.classList.add("correct");
         });
-
-        mascot.classList.add("shake");
-        setTimeout(()=> mascot.classList.remove("shake"), 600);
-        showPopup(encouragementsWrong[Math.floor(Math.random()*encouragementsWrong.length)]);
+        showMascotMood(false);
+        showPopup(wrongEncouragements[Math.floor(Math.random()*wrongEncouragements.length)]);
       }
       wordDiv.textContent = q.answer + q.word.slice(2);
       document.querySelectorAll(".choice").forEach(btn => { btn.style.pointerEvents = "none"; });
@@ -441,7 +449,18 @@
       if (confettiInterval) { clearInterval(confettiInterval); confettiInterval=null; }
       confettiSound.pause(); confettiSound.currentTime=0;
     }
+
     tryAgainBtn.onclick = () => { startGame(); };
+
+    // Initialize choices buttons
+    choices.forEach(c => {
+      const btn = document.createElement("div");
+      btn.className = "choice";
+      btn.textContent = c;
+      btn.onclick = () => checkAnswer(btn, c);
+      choicesDiv.appendChild(btn);
+    });
+
     startGame();
   </script>
 </body>
