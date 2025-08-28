@@ -394,32 +394,35 @@
     }, 1500);
   }
 
-  function checkAnswer(button, selected) {
-    const q = questions[currentIndex];
-    if (selected === q.answer) {
-      score++;
-      pointsDiv.textContent = "Points: " + score;
-      feedback.textContent = "✅ Correct!";
-      correctSound.play();
-      button.classList.add("correct");
-      showMascotMood(true);
-      showPopup(encouragements[Math.floor(Math.random()*encouragements.length)]);
-      answersLog.push("✅"); // store correct
-    } else {
-      feedback.textContent = "❌ Wrong!";
-      wrongSound.play();
-      button.classList.add("wrong");
-      document.querySelectorAll(".choice").forEach(btn => {
-        if (btn.textContent === q.answer) btn.classList.add("correct");
-      });
-      showMascotMood(false);
-      showPopup(wrongEncouragements[Math.floor(Math.random()*wrongEncouragements.length)]);
-      answersLog.push("❌"); // store wrong
-    }
-    wordDiv.textContent = q.answer + q.word.slice(2);
-    document.querySelectorAll(".choice").forEach(btn => { btn.style.pointerEvents = "none"; });
-    nextBtn.disabled = false;
+function checkAnswer(button, selected) {
+  const q = questions[currentIndex];
+  if (selected === q.answer) {
+    score++;
+    pointsDiv.textContent = "Points: " + score;
+    feedback.textContent = "✅ Correct!";
+    correctSound.play();
+    button.classList.add("correct");
+    showMascotMood(true);
+    showPopup(encouragements[Math.floor(Math.random()*encouragements.length)]);
+    answersLog.push("✅"); // correct
+  } else {
+    feedback.textContent = "❌ Wrong!";
+    wrongSound.play();
+    button.classList.add("wrong");
+    document.querySelectorAll(".choice").forEach(btn => {
+      if (btn.textContent === q.answer) btn.classList.add("correct");
+    });
+    showMascotMood(false);
+    showPopup(wrongEncouragements[Math.floor(Math.random()*wrongEncouragements.length)]);
+    // ❌ include the correct word in the log
+    let correctWord = q.answer + q.word.slice(2);
+    answersLog.push(`❌ (${correctWord})`);
   }
+  wordDiv.textContent = q.answer + q.word.slice(2);
+  document.querySelectorAll(".choice").forEach(btn => { btn.style.pointerEvents = "none"; });
+  nextBtn.disabled = false;
+}
+
 
   nextBtn.onclick = () => {
     [correctSound, wrongSound, wordSound].forEach(audio => { audio.pause(); audio.currentTime = 0; });
@@ -463,6 +466,7 @@ for (let row=0; row<2; row++) {
   tableHTML += "</tr>";
 }
 tableHTML += "</table>";
+
 
 
     resultBox.innerHTML += tableHTML;
