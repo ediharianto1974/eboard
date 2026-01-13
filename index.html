@@ -1,234 +1,194 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>e-Board -- Guess the Initial Sounds</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-      background: url("background.gif") no-repeat center center fixed;
-      background-size: cover;
-      animation: gradientBG 12s ease infinite;
+    :root {
+      --primary: #3b82f6;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --bg-light: rgba(255, 255, 255, 0.8);
     }
 
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 10px;
+      background: #f0f2f5 url("background.gif") no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
     }
 
     header { 
-      font-size: 2em; 
+      font-size: 1.8rem; 
       font-weight: bold; 
-      margin-bottom: 10px; 
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      margin: 15px 0; 
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      color: #1e293b;
     }
 
     #bgControl {
       margin: 10px auto;
-      max-width: 400px;
-      display: flex;
-      justify-content: center;
+      background: var(--bg-light);
+      padding: 10px;
+      border-radius: 30px;
+      display: inline-flex;
       align-items: center;
       gap: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     #topbar { 
       display: flex; 
       justify-content: space-between; 
       max-width: 700px; 
-      margin: 0 auto 10px auto; 
-      font-size: 1.1em; 
+      margin: 10px auto; 
+      font-weight: bold;
+      padding: 0 15px;
     }
 
     #progressContainer {
-      width: 80%;
+      width: 90%;
       max-width: 700px;
       margin: 10px auto;
       background: #e5e7eb;
       border-radius: 20px;
-      overflow: hidden;
-      height: 20px;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+      height: 15px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
 
     #progressBar {
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg,#22c55e,#3b82f6);
-      transition: width 0.5s ease;
+      background: linear-gradient(90deg, var(--success), var(--primary));
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 20px;
     }
-
-    #word { font-size: 2em; margin: 20px 0; letter-spacing: 5px; }
-
-    #choices { 
-      display: grid; 
-      grid-template-columns: repeat(6, 1fr); 
-      gap: 10px; 
-      max-width: 700px; 
-      margin: 20px auto; 
-    }
-
-    .choice { 
-      background: #e5e7eb; 
-      border-radius: 8px; 
-      padding: 15px; 
-      cursor: pointer; 
-      font-size: 1.2em; 
-      transition: 0.2s; 
-      user-select: none;
-      border: 2px solid black;
-    }
-    .choice:hover { background: #d1d5db; }
-    .choice.correct { background: #22c55e !important; color: white; }
-    .choice.wrong { background: #ef4444 !important; color: white; }
-
-    #feedback { font-size: 1.2em; margin-top: 15px; min-height: 30px; }
 
     #imageContainer { 
       display: flex; 
+      flex-direction: column;
       align-items: center; 
-      justify-content: center; 
       gap: 15px; 
-      margin: 10px auto; 
+      margin: 20px auto; 
     }
 
     #imagePlaceholder {
-      width: 220px; 
-      height: 220px; 
-      border: 3px dashed #9ca3af; 
-      border-radius: 10px;
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      background: rgba(255,255,255,0.6);
+      width: 200px; 
+      height: 200px; 
+      border: 4px solid white;
+      border-radius: 20px;
+      overflow: hidden;
+      background: var(--bg-light);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    #image {
-      max-width: 200px; 
-      max-height: 200px;
-      display: block;
+    #image { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+    #word { 
+      font-size: 2.5rem; 
+      margin: 15px 0; 
+      letter-spacing: 3px; 
+      font-weight: bold;
+      color: #334155;
     }
 
-    #soundBtn { 
-      background: #38bdf8; 
-      border: none; 
-      border-radius: 50%; 
-      width: 50px; 
-      height: 50px; 
+    /* Responsi Grid Jawapan */
+    #choices { 
+      display: grid; 
+      grid-template-columns: repeat(4, 1fr); 
+      gap: 12px; 
+      max-width: 600px; 
+      margin: 20px auto; 
+      padding: 0 10px;
+    }
+
+    @media (max-width: 480px) {
+      #choices { grid-template-columns: repeat(3, 1fr); }
+      header { font-size: 1.4rem; }
+    }
+
+    .choice { 
+      background: white; 
+      border-radius: 12px; 
+      padding: 15px 5px; 
       cursor: pointer; 
-      font-size: 1.5em; 
-      color: white; 
-      transition: 0.2s; 
+      font-size: 1.3rem; 
+      font-weight: bold;
+      transition: all 0.2s; 
+      border: 2px solid #cbd5e1;
+      box-shadow: 0 4px 0 #cbd5e1;
     }
-    #soundBtn:hover { background: #0ea5e9; }
+
+    .choice:hover { transform: translateY(-2px); background: #f8fafc; }
+    .choice:active { transform: translateY(2px); box-shadow: none; }
+
+    .choice.correct { background: var(--success) !important; color: white; border-color: #16a34a; box-shadow: 0 4px 0 #16a34a; }
+    .choice.wrong { background: var(--danger) !important; color: white; border-color: #dc2626; box-shadow: 0 4px 0 #dc2626; }
 
     #nextBtn { 
       display: none; 
-      margin-top: 20px; 
-      padding: 10px 20px; 
-      font-size: 1.2em; 
+      margin: 20px auto; 
+      padding: 12px 30px; 
+      font-size: 1.2rem; 
       border: none; 
-      border-radius: 8px; 
-      background: #22c55e; 
+      border-radius: 50px; 
+      background: var(--primary); 
       color: white; 
       cursor: pointer; 
-      transition: 0.2s; 
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
     }
-    #nextBtn:hover:enabled { background: #16a34a; }
-    #nextBtn:disabled { background: #9ca3af; cursor: not-allowed; }
+    #nextBtn:disabled { background: #9ca3af; cursor: not-allowed; box-shadow: none; }
 
     #resultBox {
-      font-size: 1.3em;
-      margin-top: 20px;
-      opacity: 0;
-      transform: scale(0.8);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    #resultBox.show {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    #tryAgainBtn { 
-      display:none; 
-      margin-top:20px; 
-      padding:10px 20px; 
-      font-size:1.2em; 
-      border:none; 
-      border-radius:8px; 
-      background:#3b82f6; 
-      color:white; 
-      cursor:pointer; 
-      transition:0.2s; 
-    }
-    #tryAgainBtn:hover { background:#2563eb; }
-
-    /* Mascot */
-    #mascot {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 120px;
-      z-index: 1000;
-      animation: bounce 3s infinite ease-in-out;
-      cursor: pointer;
-    }
-
-    @keyframes bounce {
-      0%,100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
-    }
-
-    @keyframes fly {
-      0% { transform: translate(0,0) rotate(0deg); }
-      25% { transform: translate(20px,-20px) rotate(10deg); }
-      50% { transform: translate(-20px,-10px) rotate(-10deg); }
-      75% { transform: translate(10px,-15px) rotate(5deg); }
-      100% { transform: translate(0,0) rotate(0deg); }
-    }
-
-    @keyframes shake {
-      0% { transform: rotate(0deg); }
-      25% { transform: rotate(10deg); }
-      50% { transform: rotate(-10deg); }
-      75% { transform: rotate(10deg); }
-      100% { transform: rotate(0deg); }
-    }
-
-    /* Popup speech bubble */
-    #popup {
-      position: fixed;
-      bottom: 160px;
-      right: 40px;
-      background: #fff;
-      border: 2px solid #333;
-      border-radius: 10px;
-      padding: 10px 15px;
-      font-size: 1.1em;
-      box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      background: white;
+      padding: 20px;
+      border-radius: 20px;
+      max-width: 500px;
+      margin: 20px auto;
       display: none;
-      animation: fadeInOut 3s forwards;
-      max-width: 200px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-    @keyframes fadeInOut {
-      0% { opacity: 0; transform: scale(0.8); }
-      10% { opacity: 1; transform: scale(1); }
-      90% { opacity: 1; }
-      100% { opacity: 0; transform: scale(0.8); }
+
+    table { width: 100%; margin-top: 15px; border-collapse: collapse; }
+    th, td { border: 1px solid #e2e8f0; padding: 8px; font-size: 0.9rem; }
+    th { background: #f1f5f9; }
+
+    #mascot {
+      position: fixed; bottom: 20px; right: 20px; width: 100px; z-index: 1000;
+      transition: transform 0.3s;
     }
+
+    #popup {
+      position: fixed; bottom: 130px; right: 30px; background: white;
+      border: 2px solid #334155; border-radius: 15px; padding: 10px;
+      display: none; z-index: 1001; max-width: 150px; font-weight: bold;
+    }
+
+    .btn-sound {
+      background: #8b5cf6; border: none; border-radius: 50%;
+      width: 60px; height: 60px; cursor: pointer; color: white;
+      font-size: 1.5rem; box-shadow: 0 4px 0 #7c3aed;
+    }
+    .btn-sound:active { transform: translateY(2px); box-shadow: none; }
+
+    @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
   </style>
 </head>
 <body>
-  <header>e-Board -- Guess the Initial Blending Sounds</header>
 
-  <!-- Background Music Controls -->
+  <header>e-Board: Guess the Blending Sound</header>
+
   <div id="bgControl">
-    <button id="playBgBtn">▶️ Play Music</button>
-    <label>Volume: <input type="range" id="bgVolume" min="0" max="100" value="20"></label>
+    <button onclick="bgMusic.play()" style="border:none; background:none; cursor:pointer; font-size:1.2rem;">▶️</button>
+    <input type="range" id="bgVolume" min="0" max="100" value="20">
   </div>
 
   <div id="topbar">
@@ -237,27 +197,29 @@
   </div>
 
   <div id="progressContainer"><div id="progressBar"></div></div>
-  <hr>
 
-  <div id="imageContainer">
-    <div id="imagePlaceholder">
-      <img id="image" src="" alt="word image">
+  <div id="gameArea">
+    <div id="imageContainer">
+      <div id="imagePlaceholder">
+        <img id="image" src="" alt="Word Visual">
+      </div>
+      <button id="soundBtn" class="btn-sound">🔊</button>
     </div>
-    <button id="soundBtn">🔊</button>
+
+    <div id="word">__</div>
+    <div id="choices"></div>
+    <div id="feedback" style="height: 30px; font-weight: bold; margin: 10px;"></div>
+    <button id="nextBtn" disabled>Next Question ➡️</button>
   </div>
 
-  <div id="word">__</div>
-  <div id="choices"></div>
-  <div id="feedback"></div>
-
-  <button id="nextBtn" disabled>Next ➡️</button>
-  <div id="resultBox"></div>
-  <button id="tryAgainBtn">🔄 TRY AGAIN</button>
+  <div id="resultBox">
+    <div id="resultContent"></div>
+    <button onclick="startGame()" style="margin-top:15px; padding:10px 20px; cursor:pointer; border-radius:10px; border:none; background:var(--primary); color:white; font-weight:bold;">🔄 TRY AGAIN</button>
+  </div>
 
   <img id="mascot" src="normal.png" alt="Mascot">
   <div id="popup"></div>
 
-  <!-- Sounds -->
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
   <audio id="wordSound"></audio>
@@ -281,230 +243,157 @@
     {word: "__ONDE", answer: "BL", image: "blonde.jpg", sound: "blonde.mp3"},
   ];
 
-  const choices = ["DR","TR","FR","GR","CR","BR","PR","PL","FL","GL","CL","BL"];
-  let score = 0, currentIndex = 0, questions = [];
-  let confettiInterval = null;
-  let gradeNow = "";
-  let answersLog = []; // ✅ to store correct/wrong per question
+  const choiceList = ["DR","TR","FR","GR","CR","BR","PR","PL","FL","GL","CL","BL"];
+  let score = 0, currentIndex = 0, currentQuestions = [], answersLog = [];
 
-  const img = document.getElementById("image");
-  const wordDiv = document.getElementById("word");
-  const pointsDiv = document.getElementById("points");
-  const feedback = document.getElementById("feedback");
-  const choicesDiv = document.getElementById("choices");
-  const counterDiv = document.getElementById("counter");
-  const soundBtn = document.getElementById("soundBtn");
-  const wordSound = document.getElementById("wordSound");
-  const nextBtn = document.getElementById("nextBtn");
-  const resultBox = document.getElementById("resultBox");
-  const tryAgainBtn = document.getElementById("tryAgainBtn");
-  const correctSound = document.getElementById("correctSound");
-  const wrongSound = document.getElementById("wrongSound");
-  const confettiSound = document.getElementById("confettiSound");
-  const progressBar = document.getElementById("progressBar");
-  const mascot = document.getElementById("mascot");
-  const popup = document.getElementById("popup");
-  const bgMusic = document.getElementById("bgMusic");
-  const playBgBtn = document.getElementById("playBgBtn");
-  const bgVolume = document.getElementById("bgVolume");
-
-  const encouragements = [
-    "🌟 Great job!", "👍 Keep going!", "🔥 You’re amazing!", "💡 Smart choice!", "👏 Well done!"
-  ];
-
-  const wrongEncouragements = [
-    "😢 Oops, try again!", "😓 Not quite, keep practising!", "🙁 Don't give up!", "💧 Almost there!", "😟 Listen carefully!"
-  ];
-
-  function shuffleArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-  }
+  // DOM Elements
+  const els = {
+    img: document.getElementById("image"),
+    word: document.getElementById("word"),
+    points: document.getElementById("points"),
+    choices: document.getElementById("choices"),
+    counter: document.getElementById("counter"),
+    nextBtn: document.getElementById("nextBtn"),
+    progress: document.getElementById("progressBar"),
+    resultBox: document.getElementById("resultBox"),
+    gameArea: document.getElementById("gameArea"),
+    feedback: document.getElementById("feedback"),
+    mascot: document.getElementById("mascot"),
+    popup: document.getElementById("popup"),
+    bgMusic: document.getElementById("bgMusic")
+  };
 
   function startGame() {
     score = 0;
     currentIndex = 0;
-    answersLog = []; // reset log
-    shuffleArray(gameData);
-    questions = gameData.slice(0, 12);
-    pointsDiv.textContent = "Points: 0";
-    resultBox.textContent = "";
-    resultBox.classList.remove("show");
-    tryAgainBtn.style.display = "none";
-    document.getElementById("imageContainer").style.display = "flex";
-    wordDiv.style.display = "block";
-    choicesDiv.style.display = "grid";
-    nextBtn.style.display = "inline-block";
+    answersLog = [];
+    currentQuestions = [...gameData].sort(() => Math.random() - 0.5);
+    
+    els.gameArea.style.display = "block";
+    els.resultBox.style.display = "none";
+    els.points.textContent = "Points: 0";
+    els.nextBtn.style.display = "block";
+    
     stopConfetti();
-    updateProgress();
     loadQuestion();
-    mascot.src = "normal.png";
-    mascot.style.animation = "bounce 3s infinite ease-in-out";
-    bgMusic.volume = bgVolume.value / 100;
-  }
-
-  // Background music controls
-  playBgBtn.onclick = () => { bgMusic.play(); };
-  bgVolume.oninput = () => { bgMusic.volume = bgVolume.value / 100; };
-
-  function showPopup(message) {
-    popup.textContent = message;
-    popup.style.display = "block";
-    setTimeout(()=>{ popup.style.display="none"; }, 3000);
-  }
-
-  function resetChoices() {
-    document.querySelectorAll(".choice").forEach(btn => {
-      btn.classList.remove("correct", "wrong");
-      btn.style.pointerEvents = "auto";
-    });
   }
 
   function loadQuestion() {
-    if (currentIndex >= questions.length) { showResult(); return; }
-    const q = questions[currentIndex];
-    img.src = q.image;
-    wordDiv.textContent = q.word;
-    feedback.textContent = "";
-    counterDiv.textContent = "Question: " + (currentIndex+1) + " / " + questions.length;
-    nextBtn.disabled = true;
-    wordSound.src = q.sound;
-    resetChoices();
-    updateProgress();
+    if (currentIndex >= currentQuestions.length) return showResult();
+    
+    const q = currentQuestions[currentIndex];
+    els.img.src = q.image;
+    els.word.textContent = q.word;
+    els.feedback.textContent = "";
+    els.counter.textContent = `Question: ${currentIndex + 1} / ${currentQuestions.length}`;
+    els.nextBtn.disabled = true;
+    document.getElementById("wordSound").src = q.sound;
+    
+    els.progress.style.width = `${(currentIndex / currentQuestions.length) * 100}%`;
+    
+    renderChoices();
   }
 
-  function updateProgress() {
-    let percent = (currentIndex / 12) * 100;
-    progressBar.style.width = percent + "%";
-  }
-
-  function showMascotMood(correct) {
-    if(correct) {
-      mascot.src = "happy.png";
-      mascot.style.animation = "fly 1.5s ease-in-out";
-    } else {
-      mascot.src = "angry.png";
-      mascot.style.animation = "shake 0.5s";
-    }
-    setTimeout(() => {
-      mascot.src = "normal.png";
-      mascot.style.animation = "bounce 3s infinite ease-in-out";
-    }, 1500);
-  }
-
-function checkAnswer(button, selected) {
-  const q = questions[currentIndex];
-  if (selected === q.answer) {
-    score++;
-    pointsDiv.textContent = "Points: " + score;
-    feedback.textContent = "✅ Correct!";
-    correctSound.play();
-    button.classList.add("correct");
-    showMascotMood(true);
-    showPopup(encouragements[Math.floor(Math.random()*encouragements.length)]);
-    answersLog.push("✅"); // correct
-  } else {
-    feedback.textContent = "❌ Wrong!";
-    wrongSound.play();
-    button.classList.add("wrong");
-    document.querySelectorAll(".choice").forEach(btn => {
-      if (btn.textContent === q.answer) btn.classList.add("correct");
+  function renderChoices() {
+    els.choices.innerHTML = "";
+    choiceList.forEach(c => {
+      const btn = document.createElement("div");
+      btn.className = "choice";
+      btn.textContent = c;
+      btn.onclick = () => checkAnswer(btn, c);
+      els.choices.appendChild(btn);
     });
-    showMascotMood(false);
-    showPopup(wrongEncouragements[Math.floor(Math.random()*wrongEncouragements.length)]);
-    // ❌ include the correct word in the log
-    let correctWord = q.answer + q.word.slice(2);
-    answersLog.push(`❌ (${correctWord})`);
   }
-  wordDiv.textContent = q.answer + q.word.slice(2);
-  document.querySelectorAll(".choice").forEach(btn => { btn.style.pointerEvents = "none"; });
-  nextBtn.disabled = false;
-}
 
+  function checkAnswer(selectedBtn, choice) {
+    const q = currentQuestions[currentIndex];
+    const isCorrect = (choice === q.answer);
+    const fullWord = q.word.replace("__", q.answer);
 
-  nextBtn.onclick = () => {
-    [correctSound, wrongSound, wordSound].forEach(audio => { audio.pause(); audio.currentTime = 0; });
+    if (isCorrect) {
+      score++;
+      els.points.textContent = `Points: ${score}`;
+      els.feedback.textContent = "✅ Excellent!";
+      els.feedback.style.color = "var(--success)";
+      selectedBtn.classList.add("correct");
+      document.getElementById("correctSound").play();
+      showMascotMood(true, "🌟 Awesome!");
+      answersLog.push(`✅ ${fullWord}`);
+    } else {
+      els.feedback.textContent = "❌ Try again next time!";
+      els.feedback.style.color = "var(--danger)";
+      selectedBtn.classList.add("wrong");
+      document.getElementById("wrongSound").play();
+      showMascotMood(false, "😟 It's okay!");
+      answersLog.push(`❌ ${fullWord}`);
+      
+      // Highlight correct answer
+      Array.from(els.choices.children).forEach(btn => {
+        if(btn.textContent === q.answer) btn.classList.add("correct");
+      });
+    }
+
+    els.word.textContent = fullWord;
+    Array.from(els.choices.children).forEach(btn => btn.style.pointerEvents = "none");
+    els.nextBtn.disabled = false;
+  }
+
+  function showMascotMood(isHappy, msg) {
+    els.mascot.src = isHappy ? "happy.png" : "angry.png";
+    els.mascot.style.animation = isHappy ? "bounce 1s infinite" : "shake 0.5s";
+    els.popup.textContent = msg;
+    els.popup.style.display = "block";
+    
+    setTimeout(() => {
+      els.mascot.src = "normal.png";
+      els.mascot.style.animation = "none";
+      els.popup.style.display = "none";
+    }, 2000);
+  }
+
+  els.nextBtn.onclick = () => {
     currentIndex++;
     loadQuestion();
   };
 
-  soundBtn.onclick = () => { wordSound.play(); };
+  document.getElementById("soundBtn").onclick = () => document.getElementById("wordSound").play();
+  document.getElementById("bgVolume").oninput = (e) => els.bgMusic.volume = e.target.value / 100;
 
   function showResult() {
-    document.getElementById("imageContainer").style.display = "none";
-    wordDiv.style.display = "none";
-    choicesDiv.style.display = "none";
-    counterDiv.textContent = "";
-    nextBtn.style.display = "none";
-    progressBar.style.width = "100%";
-
-    let grade = "", notes = "";
-    if (score >= 10) { grade = "A"; }
-    else if (score >= 7) { grade = "B"; notes="👉 Keep practising!"; }
-    else if (score >= 5) { grade = "C"; notes="📘 Revise more."; }
-    else if (score >= 3) { grade = "D"; notes="✏️ Listen carefully."; }
-    else { grade = "E"; notes="🔄 Practise basics."; }
-
-    gradeNow = grade;
-    resultBox.innerHTML = `🎯 Final Score: ${score}/12 <br> 🏅 Grade: <b>${grade}</b><br>${notes}`;
-
-// ✅ Build summary table
-let tableHTML = "<table style='margin:15px auto; border-collapse:collapse; text-align:center;'>";
-for (let row=0; row<2; row++) {
-  let start = row*6;
-  let end = start+6;
-  tableHTML += "<tr>";
-  for (let i=start; i<end; i++) {
-    tableHTML += `<th style="border:1px solid black; background:white; padding:5px;">Q${i+1}</th>`;
-  }
-  tableHTML += "</tr><tr>";
-  for (let i=start; i<end; i++) {
-    tableHTML += `<td style="border:1px solid black; background:white; padding:5px;">${answersLog[i] || "-"}</td>`;
-  }
-  tableHTML += "</tr>";
-}
-tableHTML += "</table>";
-
-
-
-    resultBox.innerHTML += tableHTML;
-
-    resultBox.classList.add("show");
-    tryAgainBtn.style.display = "inline-block";
-
-    if (["A","B","C"].includes(grade)) startConfetti(grade);
-    bgMusic.pause(); // pause music when showing result
+    els.gameArea.style.display = "none";
+    els.resultBox.style.display = "block";
+    els.progress.style.width = "100%";
+    
+    let grade = score >= 10 ? "A" : score >= 7 ? "B" : score >= 5 ? "C" : "D";
+    
+    let tableHTML = `<h3>Final Result: ${score}/12 (Grade ${grade})</h3><table><tr>`;
+    answersLog.forEach((log, i) => {
+      if(i === 6) tableHTML += `</tr><tr>`; // Pecah kepada 2 baris
+      tableHTML += `<td>Q${i+1}<br>${log}</td>`;
+    });
+    tableHTML += `</tr></table>`;
+    
+    document.getElementById("resultContent").innerHTML = tableHTML;
+    
+    if (["A", "B"].includes(grade)) startConfetti();
+    els.bgMusic.pause();
   }
 
-  function startConfetti(grade) {
-    stopConfetti();
-    confettiSound.play();
-    if (grade === "A") {
-      confettiInterval = setInterval(()=>{ confetti({particleCount:150,spread:120,scalar:1.2,origin:{y:0.6}}); },700);
-    } else if (grade === "B") {
-      confettiInterval = setInterval(()=>{ confetti({particleCount:100,spread:80,scalar:0.9,colors:["#a78bfa","#60a5fa","#34d399"],origin:{y:0.7}}); },1200);
-    } else if (grade === "C") {
-      confettiInterval = setInterval(()=>{ confetti({particleCount:60,spread:60,scalar:0.7,colors:["#fde68a","#fcd34d","#fbbf24"],origin:{y:0.8}}); },1500);
-    }
+  let confettiInterval;
+  function startConfetti() {
+    document.getElementById("confettiSound").play();
+    confettiInterval = setInterval(() => {
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    }, 1000);
   }
+
   function stopConfetti() {
-    if (confettiInterval) { clearInterval(confettiInterval); confettiInterval=null; }
-    confettiSound.pause(); confettiSound.currentTime=0;
+    clearInterval(confettiInterval);
+    const cs = document.getElementById("confettiSound");
+    cs.pause(); cs.currentTime = 0;
   }
 
-  tryAgainBtn.onclick = () => { startGame(); };
-
-  // Initialize choice buttons
-  choices.forEach(c => {
-    const btn = document.createElement("div");
-    btn.className = "choice";
-    btn.textContent = c;
-    btn.onclick = () => checkAnswer(btn, c);
-    choicesDiv.appendChild(btn);
-  });
-
+  // Mula permainan
   startGame();
 </script>
 </body>
