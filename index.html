@@ -22,7 +22,7 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Prevents dragging/scrolling */
+      overflow: hidden;
     }
 
     header { 
@@ -40,7 +40,7 @@
       border-radius: 20px;
       font-size: 1rem;
       display: inline-block;
-      margin: 0 auto 10px auto;
+      margin-bottom: 10px;
     }
 
     #topbar { 
@@ -69,10 +69,9 @@
       transition: width 0.3s;
     }
 
-    /* MAIN GAME LAYOUT - SIDE BY SIDE */
     #gameArea {
       display: flex;
-      flex-direction: row; /* Horizontal Layout */
+      flex-direction: row;
       align-items: center;
       justify-content: center;
       gap: 40px;
@@ -84,7 +83,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
-    /* Left Side: Image */
     .visual-section {
       flex: 1;
       display: flex;
@@ -107,7 +105,6 @@
 
     #image { max-width: 90%; max-height: 90%; object-fit: contain; }
 
-    /* Right Side: Interaction */
     .interaction-section {
       flex: 1.5;
       display: flex;
@@ -169,15 +166,12 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
-    #mascot { position: fixed; bottom: 10px; right: 10px; width: 100px; }
-    
     .btn-sound {
       background: #8b5cf6; border: none; border-radius: 50%;
       width: 60px; height: 60px; cursor: pointer; color: white;
       font-size: 1.5rem; box-shadow: 0 4px 0 #7c3aed;
     }
 
-    /* Tablet/Mobile adjustments */
     @media (max-width: 768px) {
       #gameArea { flex-direction: column; gap: 10px; overflow-y: auto; height: auto; }
       #imagePlaceholder { width: 180px; height: 180px; }
@@ -190,7 +184,7 @@
   <div style="text-align: center;"><div id="levelBadge">Level 1</div></div>
 
   <div id="topbar">
-    <div id="points">Points: 0</div>
+    <div id="points">Total Points: 0</div>
     <div id="counter">Q: 1 / 4</div>
   </div>
 
@@ -201,7 +195,7 @@
       <div id="imagePlaceholder">
         <img id="image" src="" alt="Word Visual">
       </div>
-      <button id="soundBtn" class="btn-sound" title="Listen to word">🔊</button>
+      <button id="soundBtn" class="btn-sound">🔊</button>
     </div>
 
     <div class="interaction-section">
@@ -214,56 +208,30 @@
 
   <div id="resultBox">
     <div id="resultContent"></div>
-    <button onclick="restartGame()" style="margin-top:20px; padding:12px 25px; cursor:pointer; border-radius:12px; border:none; background:var(--primary); color:white; font-weight:bold;">🔄 REPLAY GAME</button>
+    <button onclick="restartGame()" style="margin-top:20px; padding:12px 25px; cursor:pointer; border-radius:12px; border:none; background:var(--primary); color:white; font-weight:bold;">🔄 RESTART GAME</button>
   </div>
-
-  <img id="mascot" src="normal.png" alt="Mascot">
 
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
   <audio id="wordSound"></audio>
   <audio id="bgMusic" src="bmusic.mp3" loop></audio>
 
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/dist/confetti.browser.min.js"></script>
 <script>
   const levels = {
-    1: {
-      name: "Level 1: L-Blends",
-      choices: ["BL", "CL", "FL", "GL", "PL", "SL"],
-      data: [
-        {word: "__UE", answer: "GL", image: "glue.jpg", sound: "glue.mp3"},
-        {word: "__AP", answer: "CL", image: "clap.jpg", sound: "clap.mp3"},
-        {word: "__ANE", answer: "PL", image: "plane.jpg", sound: "plane.mp3"},
-        {word: "__ONDE", answer: "BL", image: "blonde.jpg", sound: "blonde.mp3"}
-      ]
-    },
-    2: {
-      name: "Level 2: R-Blends",
-      choices: ["BR", "CR", "DR", "FR", "GR", "TR"],
-      data: [
-        {word: "__AGON", answer: "DR", image: "dragon.jpg", sound: "dragon.mp3"},
-        {word: "__EE", answer: "TR", image: "tree.jpg", sound: "tree.mp3"},
-        {word: "__UIT", answer: "FR", image: "fruit.jpg", sound: "fruit.mp3"},
-        {word: "__USH", answer: "BR", image: "brush.jpg", sound: "brush.mp3"}
-      ]
-    },
-    3: {
-      name: "Level 3: Mix Master",
-      choices: ["DR", "TR", "FL", "GR", "CR", "BR", "PR", "PL"],
-      data: [
-        {word: "__EY", answer: "GR", image: "grey.jpg", sound: "grey.mp3"},
-        {word: "__AYON", answer: "CR", image: "crayon.jpg", sound: "crayon.mp3"},
-        {word: "__ETTY", answer: "PR", image: "pretty.jpg", sound: "pretty.mp3"},
-        {word: "__Y", answer: "FL", image: "fly.jpg", sound: "fly.mp3"}
-      ]
-    }
+    1: { name: "Level 1: L-Blends", choices: ["BL", "CL", "FL", "GL", "PL", "SL"],
+         data: [{word: "__UE", answer: "GL", image: "glue.jpg", sound: "glue.mp3"}, {word: "__AP", answer: "CL", image: "clap.jpg", sound: "clap.mp3"}, {word: "__ANE", answer: "PL", image: "plane.jpg", sound: "plane.mp3"}, {word: "__ONDE", answer: "BL", image: "blonde.jpg", sound: "blonde.mp3"}] },
+    2: { name: "Level 2: R-Blends", choices: ["BR", "CR", "DR", "FR", "GR", "TR"],
+         data: [{word: "__AGON", answer: "DR", image: "dragon.jpg", sound: "dragon.mp3"}, {word: "__EE", answer: "TR", image: "tree.jpg", sound: "tree.mp3"}, {word: "__UIT", answer: "FR", image: "fruit.jpg", sound: "fruit.mp3"}, {word: "__USH", answer: "BR", image: "brush.jpg", sound: "brush.mp3"}] },
+    3: { name: "Level 3: Master Mix", choices: ["DR", "TR", "FL", "GR", "CR", "BR", "PR", "PL"],
+         data: [{word: "__EY", answer: "GR", image: "grey.jpg", sound: "grey.mp3"}, {word: "__AYON", answer: "CR", image: "crayon.jpg", sound: "crayon.mp3"}, {word: "__ETTY", answer: "PR", image: "pretty.jpg", sound: "pretty.mp3"}, {word: "__Y", answer: "FL", image: "fly.jpg", sound: "fly.mp3"}] }
   };
 
   let currentLevel = 1;
-  let score = 0;
+  let totalScore = 0;
+  let correctInLevel = 0; // Tracks performance for the current level
   let currentIndex = 0;
   let levelQuestions = [];
-  let answersLog = [];
 
   const els = {
     img: document.getElementById("image"),
@@ -279,14 +247,25 @@
     lvlBadge: document.getElementById("levelBadge")
   };
 
+  function stopAllSounds() {
+    const sounds = ['correctSound', 'wrongSound', 'wordSound'];
+    sounds.forEach(id => {
+      const s = document.getElementById(id);
+      s.pause();
+      s.currentTime = 0;
+    });
+  }
+
   function startGame() {
     levelQuestions = [...levels[currentLevel].data].sort(() => Math.random() - 0.5);
     els.lvlBadge.textContent = levels[currentLevel].name;
     currentIndex = 0;
+    correctInLevel = 0; // Reset level performance
     loadQuestion();
   }
 
   function loadQuestion() {
+    stopAllSounds();
     const q = levelQuestions[currentIndex];
     els.img.src = q.image;
     els.word.textContent = q.word;
@@ -316,14 +295,15 @@
     const fullWord = q.word.replace("__", q.answer);
 
     if (isCorrect) {
-      score += 10;
-      els.points.textContent = `Points: ${score}`;
+      totalScore += 10;
+      correctInLevel++; // Count this for level advancement
+      els.points.textContent = `Total Points: ${totalScore}`;
       els.feedback.textContent = "✨ Correct!";
       els.feedback.style.color = "var(--success)";
       selectedBtn.classList.add("correct");
       document.getElementById("correctSound").play();
     } else {
-      els.feedback.textContent = `❌ Try again!`;
+      els.feedback.textContent = `❌ Incorrect!`;
       els.feedback.style.color = "var(--danger)";
       selectedBtn.classList.add("wrong");
       document.getElementById("wrongSound").play();
@@ -336,26 +316,36 @@
     els.word.textContent = fullWord;
     Array.from(els.choices.children).forEach(btn => btn.style.pointerEvents = "none");
     els.nextBtn.style.display = "block";
-    answersLog.push({level: currentLevel, text: `${isCorrect ? '✅' : '❌'} ${fullWord}`});
   }
 
   els.nextBtn.onclick = () => {
+    stopAllSounds(); // Stop clapping/feedback sound immediately
     currentIndex++;
+
     if (currentIndex < levelQuestions.length) {
       loadQuestion();
     } else {
-      if (currentLevel < 3) {
-        currentLevel++;
-        alert(`Excellent! Proceeding to ${levels[currentLevel].name}`);
-        startGame();
+      // Level is finished, check if student passed (needs at least 3 correct)
+      if (correctInLevel >= 3) {
+        if (currentLevel < 3) {
+          currentLevel++;
+          alert(`Great Job! You passed ${levels[currentLevel-1].name}. Get ready for Level ${currentLevel}!`);
+          startGame();
+        } else {
+          showResult();
+        }
       } else {
-        showResult();
+        // Failed the level
+        alert(`Level Failed! You only got ${correctInLevel}/4 correct. You need at least 3 to pass. Try this level again!`);
+        totalScore -= (correctInLevel * 10); // Optionally reset points for this level
+        els.points.textContent = `Total Points: ${totalScore}`;
+        startGame(); // Restarts the same level
       }
     }
   };
 
   function updateProgressBar() {
-    let totalQ = 12; // 4 questions per level x 3 levels
+    let totalQ = 12;
     let completed = ((currentLevel - 1) * 4) + currentIndex;
     els.progress.style.width = `${(completed / totalQ) * 100}%`;
   }
@@ -364,21 +354,19 @@
     els.gameArea.style.display = "none";
     els.resultBox.style.display = "block";
     els.progress.style.width = "100%";
-    
-    let tableHTML = `<h2>Game Complete!</h2><h3>Total Points: ${score}</h3><table><tr><th>Review</th></tr>`;
-    answersLog.forEach(log => {
-      tableHTML += `<tr><td>${log.text}</td></tr>`;
-    });
-    tableHTML += `</table>`;
-    
-    document.getElementById("resultContent").innerHTML = tableHTML;
+    document.getElementById("resultContent").innerHTML = `
+      <h2>Perfect! Game Completed!</h2>
+      <h3>Final Score: ${totalScore} Points</h3>
+      <p>Excellent work, Phonics Master!</p>
+    `;
+    // Confetti only on final win
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
   }
 
   function restartGame() {
     currentLevel = 1;
-    score = 0;
-    answersLog = [];
+    totalScore = 0;
+    els.points.textContent = `Total Points: 0`;
     els.gameArea.style.display = "flex";
     els.resultBox.style.display = "none";
     startGame();
