@@ -1,117 +1,133 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>e-Board -- Guess the Initial Sounds</title>
+  <title>e-Board -- Phonics Master</title>
   <style>
     :root {
       --primary: #3b82f6;
       --success: #22c55e;
       --danger: #ef4444;
-      --bg-light: rgba(255, 255, 255, 0.8);
+      --warning: #f59e0b;
+      --bg-light: rgba(255, 255, 255, 0.95);
     }
 
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      text-align: center;
       margin: 0;
       padding: 10px;
       background: #f0f2f5 url("background.gif") no-repeat center center fixed;
       background-size: cover;
-      min-height: 100vh;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; /* Prevents dragging/scrolling */
     }
 
     header { 
       font-size: 1.8rem; 
       font-weight: bold; 
-      margin: 15px 0; 
-      text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+      text-align: center;
+      margin: 5px 0;
       color: #1e293b;
     }
 
-    #bgControl {
-      margin: 10px auto;
-      background: var(--bg-light);
-      padding: 10px;
-      border-radius: 30px;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    #levelBadge {
+      background: var(--warning);
+      color: white;
+      padding: 4px 15px;
+      border-radius: 20px;
+      font-size: 1rem;
+      display: inline-block;
+      margin: 0 auto 10px auto;
     }
 
     #topbar { 
       display: flex; 
       justify-content: space-between; 
-      max-width: 700px; 
-      margin: 10px auto; 
+      max-width: 900px; 
+      margin: 0 auto; 
+      width: 100%;
       font-weight: bold;
-      padding: 0 15px;
     }
 
     #progressContainer {
-      width: 90%;
-      max-width: 700px;
-      margin: 10px auto;
+      width: 100%;
+      max-width: 900px;
+      margin: 5px auto;
       background: #e5e7eb;
       border-radius: 20px;
-      height: 15px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      height: 10px;
     }
 
     #progressBar {
       width: 0%;
       height: 100%;
       background: linear-gradient(90deg, var(--success), var(--primary));
-      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       border-radius: 20px;
+      transition: width 0.3s;
     }
 
-    #imageContainer { 
-      display: flex; 
+    /* MAIN GAME LAYOUT - SIDE BY SIDE */
+    #gameArea {
+      display: flex;
+      flex-direction: row; /* Horizontal Layout */
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      max-width: 1000px;
+      margin: auto;
+      background: var(--bg-light);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    /* Left Side: Image */
+    .visual-section {
+      flex: 1;
+      display: flex;
       flex-direction: column;
-      align-items: center; 
-      gap: 15px; 
-      margin: 20px auto; 
+      align-items: center;
+      gap: 15px;
     }
 
     #imagePlaceholder {
-      width: 200px; 
-      height: 200px; 
-      border: 4px solid white;
+      width: 250px;
+      height: 250px;
+      border: 4px solid #3b82f6;
       border-radius: 20px;
-      overflow: hidden;
-      background: var(--bg-light);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      background: white;
       display: flex;
       justify-content: center;
       align-items: center;
+      overflow: hidden;
     }
 
-    #image { max-width: 100%; max-height: 100%; object-fit: contain; }
+    #image { max-width: 90%; max-height: 90%; object-fit: contain; }
+
+    /* Right Side: Interaction */
+    .interaction-section {
+      flex: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
     #word { 
-      font-size: 2.5rem; 
-      margin: 15px 0; 
-      letter-spacing: 3px; 
+      font-size: 3.5rem; 
+      margin: 0 0 15px 0; 
+      letter-spacing: 8px; 
       font-weight: bold;
       color: #334155;
     }
 
-    /* Responsi Grid Jawapan */
     #choices { 
       display: grid; 
-      grid-template-columns: repeat(4, 1fr); 
-      gap: 12px; 
-      max-width: 600px; 
-      margin: 20px auto; 
-      padding: 0 10px;
-    }
-
-    @media (max-width: 480px) {
-      #choices { grid-template-columns: repeat(3, 1fr); }
-      header { font-size: 1.4rem; }
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 10px; 
+      width: 100%;
     }
 
     .choice { 
@@ -119,134 +135,136 @@
       border-radius: 12px; 
       padding: 15px 5px; 
       cursor: pointer; 
-      font-size: 1.3rem; 
+      font-size: 1.5rem; 
       font-weight: bold;
-      transition: all 0.2s; 
       border: 2px solid #cbd5e1;
       box-shadow: 0 4px 0 #cbd5e1;
+      text-align: center;
     }
 
-    .choice:hover { transform: translateY(-2px); background: #f8fafc; }
-    .choice:active { transform: translateY(2px); box-shadow: none; }
-
+    .choice:hover { background: #f1f5f9; }
     .choice.correct { background: var(--success) !important; color: white; border-color: #16a34a; box-shadow: 0 4px 0 #16a34a; }
     .choice.wrong { background: var(--danger) !important; color: white; border-color: #dc2626; box-shadow: 0 4px 0 #dc2626; }
 
     #nextBtn { 
-      display: none; 
-      margin: 20px auto; 
-      padding: 12px 30px; 
-      font-size: 1.2rem; 
+      margin-top: 20px;
+      padding: 12px 40px; 
+      font-size: 1.1rem; 
       border: none; 
       border-radius: 50px; 
       background: var(--primary); 
       color: white; 
       cursor: pointer; 
       font-weight: bold;
-      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+      display: none;
     }
-    #nextBtn:disabled { background: #9ca3af; cursor: not-allowed; box-shadow: none; }
 
     #resultBox {
       background: white;
-      padding: 20px;
-      border-radius: 20px;
-      max-width: 500px;
-      margin: 20px auto;
+      padding: 30px;
+      border-radius: 25px;
+      max-width: 600px;
+      margin: auto;
       display: none;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
-    table { width: 100%; margin-top: 15px; border-collapse: collapse; }
-    th, td { border: 1px solid #e2e8f0; padding: 8px; font-size: 0.9rem; }
-    th { background: #f1f5f9; }
-
-    #mascot {
-      position: fixed; bottom: 20px; right: 20px; width: 100px; z-index: 1000;
-      transition: transform 0.3s;
-    }
-
-    #popup {
-      position: fixed; bottom: 130px; right: 30px; background: white;
-      border: 2px solid #334155; border-radius: 15px; padding: 10px;
-      display: none; z-index: 1001; max-width: 150px; font-weight: bold;
-    }
-
+    #mascot { position: fixed; bottom: 10px; right: 10px; width: 100px; }
+    
     .btn-sound {
       background: #8b5cf6; border: none; border-radius: 50%;
       width: 60px; height: 60px; cursor: pointer; color: white;
       font-size: 1.5rem; box-shadow: 0 4px 0 #7c3aed;
     }
-    .btn-sound:active { transform: translateY(2px); box-shadow: none; }
 
-    @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
+    /* Tablet/Mobile adjustments */
+    @media (max-width: 768px) {
+      #gameArea { flex-direction: column; gap: 10px; overflow-y: auto; height: auto; }
+      #imagePlaceholder { width: 180px; height: 180px; }
+    }
   </style>
 </head>
 <body>
 
-  <header>e-Board: Guess the Blending Sound</header>
-
-  <div id="bgControl">
-    <button onclick="bgMusic.play()" style="border:none; background:none; cursor:pointer; font-size:1.2rem;">▶️</button>
-    <input type="range" id="bgVolume" min="0" max="100" value="20">
-  </div>
+  <header>e-Board: Phonics Master</header>
+  <div style="text-align: center;"><div id="levelBadge">Level 1</div></div>
 
   <div id="topbar">
     <div id="points">Points: 0</div>
-    <div id="counter">Question: 1 / 12</div>
+    <div id="counter">Q: 1 / 4</div>
   </div>
 
   <div id="progressContainer"><div id="progressBar"></div></div>
 
   <div id="gameArea">
-    <div id="imageContainer">
+    <div class="visual-section">
       <div id="imagePlaceholder">
         <img id="image" src="" alt="Word Visual">
       </div>
-      <button id="soundBtn" class="btn-sound">🔊</button>
+      <button id="soundBtn" class="btn-sound" title="Listen to word">🔊</button>
     </div>
 
-    <div id="word">__</div>
-    <div id="choices"></div>
-    <div id="feedback" style="height: 30px; font-weight: bold; margin: 10px;"></div>
-    <button id="nextBtn" disabled>Next Question ➡️</button>
+    <div class="interaction-section">
+      <div id="word">__</div>
+      <div id="choices"></div>
+      <div id="feedback" style="height: 30px; font-weight: bold; margin: 10px; font-size: 1.1rem;"></div>
+      <button id="nextBtn">Next Question ➡️</button>
+    </div>
   </div>
 
   <div id="resultBox">
     <div id="resultContent"></div>
-    <button onclick="startGame()" style="margin-top:15px; padding:10px 20px; cursor:pointer; border-radius:10px; border:none; background:var(--primary); color:white; font-weight:bold;">🔄 TRY AGAIN</button>
+    <button onclick="restartGame()" style="margin-top:20px; padding:12px 25px; cursor:pointer; border-radius:12px; border:none; background:var(--primary); color:white; font-weight:bold;">🔄 REPLAY GAME</button>
   </div>
 
   <img id="mascot" src="normal.png" alt="Mascot">
-  <div id="popup"></div>
 
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
   <audio id="wordSound"></audio>
-  <audio id="confettiSound" src="confetti.mp3" loop></audio>
   <audio id="bgMusic" src="bmusic.mp3" loop></audio>
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
-  const gameData = [
-    {word: "__AGON", answer: "DR", image: "dragon.jpg", sound: "dragon.mp3"},
-    {word: "__EE", answer: "TR", image: "tree.jpg", sound: "tree.mp3"},
-    {word: "__UIT", answer: "FR", image: "fruit.jpg", sound: "fruit.mp3"},
-    {word: "__EY", answer: "GR", image: "grey.jpg", sound: "grey.mp3"},
-    {word: "__AYON", answer: "CR", image: "crayon.jpg", sound: "crayon.mp3"},
-    {word: "__USH", answer: "BR", image: "brush.jpg", sound: "brush.mp3"},
-    {word: "__ETTY", answer: "PR", image: "pretty.jpg", sound: "pretty.mp3"},
-    {word: "__Y", answer: "FL", image: "fly.jpg", sound: "fly.mp3"},
-    {word: "__UE", answer: "GL", image: "glue.jpg", sound: "glue.mp3"},
-    {word: "__AP", answer: "CL", image: "clap.jpg", sound: "clap.mp3"},
-    {word: "__ANE", answer: "PL", image: "plane.jpg", sound: "plane.mp3"},
-    {word: "__ONDE", answer: "BL", image: "blonde.jpg", sound: "blonde.mp3"},
-  ];
+  const levels = {
+    1: {
+      name: "Level 1: L-Blends",
+      choices: ["BL", "CL", "FL", "GL", "PL", "SL"],
+      data: [
+        {word: "__UE", answer: "GL", image: "glue.jpg", sound: "glue.mp3"},
+        {word: "__AP", answer: "CL", image: "clap.jpg", sound: "clap.mp3"},
+        {word: "__ANE", answer: "PL", image: "plane.jpg", sound: "plane.mp3"},
+        {word: "__ONDE", answer: "BL", image: "blonde.jpg", sound: "blonde.mp3"}
+      ]
+    },
+    2: {
+      name: "Level 2: R-Blends",
+      choices: ["BR", "CR", "DR", "FR", "GR", "TR"],
+      data: [
+        {word: "__AGON", answer: "DR", image: "dragon.jpg", sound: "dragon.mp3"},
+        {word: "__EE", answer: "TR", image: "tree.jpg", sound: "tree.mp3"},
+        {word: "__UIT", answer: "FR", image: "fruit.jpg", sound: "fruit.mp3"},
+        {word: "__USH", answer: "BR", image: "brush.jpg", sound: "brush.mp3"}
+      ]
+    },
+    3: {
+      name: "Level 3: Mix Master",
+      choices: ["DR", "TR", "FL", "GR", "CR", "BR", "PR", "PL"],
+      data: [
+        {word: "__EY", answer: "GR", image: "grey.jpg", sound: "grey.mp3"},
+        {word: "__AYON", answer: "CR", image: "crayon.jpg", sound: "crayon.mp3"},
+        {word: "__ETTY", answer: "PR", image: "pretty.jpg", sound: "pretty.mp3"},
+        {word: "__Y", answer: "FL", image: "fly.jpg", sound: "fly.mp3"}
+      ]
+    }
+  };
 
-  const choiceList = ["DR","TR","FR","GR","CR","BR","PR","PL","FL","GL","CL","BL"];
-  let score = 0, currentIndex = 0, currentQuestions = [], answersLog = [];
+  let currentLevel = 1;
+  let score = 0;
+  let currentIndex = 0;
+  let levelQuestions = [];
+  let answersLog = [];
 
-  // DOM Elements
   const els = {
     img: document.getElementById("image"),
     word: document.getElementById("word"),
@@ -258,45 +276,32 @@
     resultBox: document.getElementById("resultBox"),
     gameArea: document.getElementById("gameArea"),
     feedback: document.getElementById("feedback"),
-    mascot: document.getElementById("mascot"),
-    popup: document.getElementById("popup"),
-    bgMusic: document.getElementById("bgMusic")
+    lvlBadge: document.getElementById("levelBadge")
   };
 
   function startGame() {
-    score = 0;
+    levelQuestions = [...levels[currentLevel].data].sort(() => Math.random() - 0.5);
+    els.lvlBadge.textContent = levels[currentLevel].name;
     currentIndex = 0;
-    answersLog = [];
-    currentQuestions = [...gameData].sort(() => Math.random() - 0.5);
-    
-    els.gameArea.style.display = "block";
-    els.resultBox.style.display = "none";
-    els.points.textContent = "Points: 0";
-    els.nextBtn.style.display = "block";
-    
-    stopConfetti();
     loadQuestion();
   }
 
   function loadQuestion() {
-    if (currentIndex >= currentQuestions.length) return showResult();
-    
-    const q = currentQuestions[currentIndex];
+    const q = levelQuestions[currentIndex];
     els.img.src = q.image;
     els.word.textContent = q.word;
     els.feedback.textContent = "";
-    els.counter.textContent = `Question: ${currentIndex + 1} / ${currentQuestions.length}`;
-    els.nextBtn.disabled = true;
+    els.counter.textContent = `Q: ${currentIndex + 1} / ${levelQuestions.length}`;
+    els.nextBtn.style.display = "none";
     document.getElementById("wordSound").src = q.sound;
     
-    els.progress.style.width = `${(currentIndex / currentQuestions.length) * 100}%`;
-    
+    updateProgressBar();
     renderChoices();
   }
 
   function renderChoices() {
     els.choices.innerHTML = "";
-    choiceList.forEach(c => {
+    levels[currentLevel].choices.forEach(c => {
       const btn = document.createElement("div");
       btn.className = "choice";
       btn.textContent = c;
@@ -306,28 +311,23 @@
   }
 
   function checkAnswer(selectedBtn, choice) {
-    const q = currentQuestions[currentIndex];
+    const q = levelQuestions[currentIndex];
     const isCorrect = (choice === q.answer);
     const fullWord = q.word.replace("__", q.answer);
 
     if (isCorrect) {
-      score++;
+      score += 10;
       els.points.textContent = `Points: ${score}`;
-      els.feedback.textContent = "✅ Excellent!";
+      els.feedback.textContent = "✨ Correct!";
       els.feedback.style.color = "var(--success)";
       selectedBtn.classList.add("correct");
       document.getElementById("correctSound").play();
-      showMascotMood(true, "🌟 Awesome!");
-      answersLog.push(`✅ ${fullWord}`);
     } else {
-      els.feedback.textContent = "❌ Try again next time!";
+      els.feedback.textContent = `❌ Try again!`;
       els.feedback.style.color = "var(--danger)";
       selectedBtn.classList.add("wrong");
       document.getElementById("wrongSound").play();
-      showMascotMood(false, "😟 It's okay!");
-      answersLog.push(`❌ ${fullWord}`);
       
-      // Highlight correct answer
       Array.from(els.choices.children).forEach(btn => {
         if(btn.textContent === q.answer) btn.classList.add("correct");
       });
@@ -335,65 +335,57 @@
 
     els.word.textContent = fullWord;
     Array.from(els.choices.children).forEach(btn => btn.style.pointerEvents = "none");
-    els.nextBtn.disabled = false;
-  }
-
-  function showMascotMood(isHappy, msg) {
-    els.mascot.src = isHappy ? "happy.png" : "angry.png";
-    els.mascot.style.animation = isHappy ? "bounce 1s infinite" : "shake 0.5s";
-    els.popup.textContent = msg;
-    els.popup.style.display = "block";
-    
-    setTimeout(() => {
-      els.mascot.src = "normal.png";
-      els.mascot.style.animation = "none";
-      els.popup.style.display = "none";
-    }, 2000);
+    els.nextBtn.style.display = "block";
+    answersLog.push({level: currentLevel, text: `${isCorrect ? '✅' : '❌'} ${fullWord}`});
   }
 
   els.nextBtn.onclick = () => {
     currentIndex++;
-    loadQuestion();
+    if (currentIndex < levelQuestions.length) {
+      loadQuestion();
+    } else {
+      if (currentLevel < 3) {
+        currentLevel++;
+        alert(`Excellent! Proceeding to ${levels[currentLevel].name}`);
+        startGame();
+      } else {
+        showResult();
+      }
+    }
   };
 
-  document.getElementById("soundBtn").onclick = () => document.getElementById("wordSound").play();
-  document.getElementById("bgVolume").oninput = (e) => els.bgMusic.volume = e.target.value / 100;
+  function updateProgressBar() {
+    let totalQ = 12; // 4 questions per level x 3 levels
+    let completed = ((currentLevel - 1) * 4) + currentIndex;
+    els.progress.style.width = `${(completed / totalQ) * 100}%`;
+  }
 
   function showResult() {
     els.gameArea.style.display = "none";
     els.resultBox.style.display = "block";
     els.progress.style.width = "100%";
     
-    let grade = score >= 10 ? "A" : score >= 7 ? "B" : score >= 5 ? "C" : "D";
-    
-    let tableHTML = `<h3>Final Result: ${score}/12 (Grade ${grade})</h3><table><tr>`;
-    answersLog.forEach((log, i) => {
-      if(i === 6) tableHTML += `</tr><tr>`; // Pecah kepada 2 baris
-      tableHTML += `<td>Q${i+1}<br>${log}</td>`;
+    let tableHTML = `<h2>Game Complete!</h2><h3>Total Points: ${score}</h3><table><tr><th>Review</th></tr>`;
+    answersLog.forEach(log => {
+      tableHTML += `<tr><td>${log.text}</td></tr>`;
     });
-    tableHTML += `</tr></table>`;
+    tableHTML += `</table>`;
     
     document.getElementById("resultContent").innerHTML = tableHTML;
-    
-    if (["A", "B"].includes(grade)) startConfetti();
-    els.bgMusic.pause();
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
   }
 
-  let confettiInterval;
-  function startConfetti() {
-    document.getElementById("confettiSound").play();
-    confettiInterval = setInterval(() => {
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    }, 1000);
+  function restartGame() {
+    currentLevel = 1;
+    score = 0;
+    answersLog = [];
+    els.gameArea.style.display = "flex";
+    els.resultBox.style.display = "none";
+    startGame();
   }
 
-  function stopConfetti() {
-    clearInterval(confettiInterval);
-    const cs = document.getElementById("confettiSound");
-    cs.pause(); cs.currentTime = 0;
-  }
-
-  // Mula permainan
+  document.getElementById("soundBtn").onclick = () => document.getElementById("wordSound").play();
+  
   startGame();
 </script>
 </body>
